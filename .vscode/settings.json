@@ -1,0 +1,4 @@
+{
+  "python.defaultInterpreterPath": "./venv_scopus/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true
+}

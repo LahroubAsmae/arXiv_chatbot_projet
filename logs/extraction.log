@@ -1,0 +1,67 @@
+2025-07-06 15:16:30,908 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 15:16:31,807 - INFO - Total d'articles disponibles: 161472
+2025-07-06 15:16:31,808 - INFO - Articles à extraire: 50
+2025-07-06 15:16:32,304 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Cdc%3Adescription%2Cauthkeywords%2Csubject-area%2Ccitedby-count%2Cauthor
+2025-07-06 15:16:32,431 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 15:18:59,346 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 15:18:59,952 - INFO - Total d'articles disponibles: 161472
+2025-07-06 15:18:59,953 - INFO - Articles à extraire: 50
+2025-07-06 15:19:00,274 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Cdc%3Adescription%2Cauthkeywords%2Csubject-area%2Ccitedby-count
+2025-07-06 15:19:00,389 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 15:21:26,678 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 15:21:27,386 - INFO - Total d'articles disponibles: 161472
+2025-07-06 15:21:27,388 - INFO - Articles à extraire: 50
+2025-07-06 15:21:27,732 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cprism%3AcoverDate%2Ccitedby-count
+2025-07-06 15:21:27,848 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 15:22:55,728 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 15:22:56,666 - INFO - Total d'articles disponibles: 161472
+2025-07-06 15:22:56,668 - INFO - Articles à extraire: 50
+2025-07-06 15:22:57,027 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Cdc%3Adescription%2Cauthkeywords%2Csubject-area%2Ccitedby-count
+2025-07-06 15:22:57,142 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:03:38,902 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 17:03:39,808 - INFO - Total d'articles disponibles: 161472
+2025-07-06 17:03:39,809 - INFO - Articles à extraire: 50
+2025-07-06 17:03:40,117 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Cdc%3Adescription%2Cauthkeywords%2Csubject-area%2Ccitedby-count
+2025-07-06 17:03:40,233 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:05:58,405 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 17:05:59,089 - INFO - Total d'articles disponibles: 161472
+2025-07-06 17:05:59,090 - INFO - Articles à extraire: 50
+2025-07-06 17:05:59,439 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0
+2025-07-06 17:05:59,554 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:12:11,804 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 17:12:12,377 - INFO - Total d'articles disponibles: 161472
+2025-07-06 17:12:12,382 - INFO - Articles à extraire: 50
+2025-07-06 17:12:12,579 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Ccitedby-count
+2025-07-06 17:12:12,693 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:12:26,301 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 17:12:26,908 - INFO - Total d'articles disponibles: 161472
+2025-07-06 17:12:26,909 - INFO - Articles à extraire: 50
+2025-07-06 17:12:27,130 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Ccitedby-count
+2025-07-06 17:12:27,245 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:14:52,724 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 17:14:53,407 - INFO - Total d'articles disponibles: 161472
+2025-07-06 17:14:53,408 - INFO - Articles à extraire: 50
+2025-07-06 17:14:53,632 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Ccitedby-count
+2025-07-06 17:14:53,745 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:15:33,855 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 17:15:34,397 - INFO - Total d'articles disponibles: 161472
+2025-07-06 17:15:34,398 - INFO - Articles à extraire: 50
+2025-07-06 17:15:34,619 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Ccitedby-count
+2025-07-06 17:15:34,732 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:18:46,022 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2023
+2025-07-06 17:18:46,564 - INFO - Total d'articles disponibles: 161472
+2025-07-06 17:18:46,564 - INFO - Articles à extraire: 50
+2025-07-06 17:18:46,828 - ERROR - Erreur lors de la requête: 400 Client Error: Bad Request for url: https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY%28artificial+intelligence%29+AND+PUBYEAR+%3E+2023&count=50&start=0&field=dc%3Aidentifier%2Cdc%3Atitle%2Cdc%3Acreator%2Cprism%3ApublicationName%2Cprism%3AcoverDate%2Cprism%3Adoi%2Ccitedby-count
+2025-07-06 17:18:46,942 - INFO - Extraction terminée: 0 articles récupérés
+2025-07-06 17:25:51,761 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence)
+2025-07-06 17:25:52,375 - INFO - Total d'articles disponibles: 706862
+2025-07-06 17:25:52,376 - INFO - Articles à extraire: 10
+2025-07-06 17:25:52,828 - INFO - Traité 10/10 articles
+2025-07-06 17:25:52,942 - INFO - Extraction terminée: 10 articles récupérés
+2025-07-06 17:25:52,981 - INFO - Données sauvegardées: C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.json et C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.csv
+2025-07-06 17:26:23,081 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence)
+2025-07-06 17:26:23,649 - INFO - Total d'articles disponibles: 706862
+2025-07-06 17:26:23,650 - INFO - Articles à extraire: 10
+2025-07-06 17:26:24,191 - INFO - Traité 10/10 articles
+2025-07-06 17:26:24,304 - INFO - Extraction terminée: 10 articles récupérés
+2025-07-06 17:26:24,313 - INFO - Données sauvegardées: C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.json et C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.csv

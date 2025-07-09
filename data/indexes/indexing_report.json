@@ -1,0 +1,12 @@
+{
+  "indexing_date": "2025-07-06T20:20:10.300143",
+  "model_used": "all-MiniLM-L6-v2",
+  "total_articles": 10,
+  "embedding_dimension": 384,
+  "faiss_index_size": 10,
+  "articles_by_year": {
+    "2026": 10
+  },
+  "has_abstract_count": 0,
+  "has_keywords_count": 0
+}
