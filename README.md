@@ -1,233 +1,215 @@
-# 🔬 Chatbot Scopus - Guide Complet
+# Chatbot Scopus
 
-Ce projet implémente un chatbot intelligent capable d'interroger une base de données d'articles scientifiques extraits de Scopus en utilisant des techniques de traitement du langage naturel et de recherche sémantique.
+Un système intelligent de recherche d'articles scientifiques utilisant l'API Scopus et le traitement du langage naturel.
 
-## 📋 Table des Matières
+## Description
 
-1. [Vue d'ensemble](#vue-densemble)
-2. [Architecture du Projet](#architecture-du-projet)
-3. [Installation](#installation)
-4. [Configuration](#configuration)
-5. [Utilisation](#utilisation)
-6. [Structure des Données](#structure-des-données)
-7. [Technologies Utilisées](#technologies-utilisées)
-8. [Dépannage](#dépannage)
+Ce projet implémente un chatbot conversationnel capable d'interroger une base de données d'articles scientifiques issus de Scopus. Il utilise des techniques avancées de recherche sémantique et d'indexation vectorielle pour fournir des réponses pertinentes aux requêtes des utilisateurs.
 
-## 🎯 Vue d'ensemble
+## Fonctionnalités
 
-Le chatbot Scopus permet de :
-- ✅ Extraire automatiquement des données depuis l'API Scopus
-- ✅ Nettoyer et structurer les données bibliographiques
-- ✅ Créer des index sémantiques pour la recherche intelligente
-- ✅ Fournir une interface conversationnelle intuitive
-- ✅ Générer des visualisations et statistiques
+- **Extraction automatique** des données depuis l'API Scopus
+- **Nettoyage et structuration** des données scientifiques
+- **Indexation sémantique** avec embeddings vectoriels
+- **Interface conversationnelle** intuitive
+- **Visualisations interactives** des résultats
+- **Recherche par similarité** contextuelle
 
-## 🏗️ Architecture du Projet
+## Architecture du Projet
 
-\`\`\`
+```
 scopus_chatbot/
 ├── scripts/
-│   ├── 1_extract_scopus_data.py      # Extraction API Scopus
-│   ├── 2_clean_and_store_data.py     # Nettoyage et stockage
-│   ├── 3_semantic_indexing.py        # Indexation sémantique
-│   ├── 4_streamlit_chatbot.py        # Interface utilisateur
-│   ├── 5_requirements.py             # Gestion des dépendances
-│   ├── 6_run_complete_pipeline.py    # Pipeline complet
-│   └── database_schema.sql           # Schéma de base de données
+│   ├── 1_extract_scopus_data.py
+│   ├── 2_clean_and_store_data.py
+│   ├── 3_semantic_indexing.py
+│   ├── 4_streamlit_chatbot.py
+│   ├── 5_requirements.py
+│   ├── 6_run_complete_pipeline.py
+│   └── database_schema.sql
 ├── data/
-│   ├── raw_scopus_data.csv          # Données brutes
-│   ├── scopus_database.db           # Base SQLite
-│   ├── scopus_faiss.index           # Index FAISS
-│   └── faiss_metadata.pkl           # Métadonnées
-├── chroma_db/                       # Base ChromaDB
-├── requirements.txt                 # Dépendances Python
-└── README.md                       # Ce fichier
-\`\`\`
+│   ├── raw_scopus_data.csv
+│   ├── scopus_database.db
+│   ├── scopus_faiss.index
+│   └── faiss_metadata.pkl
+├── chroma_db/
+├── requirements.txt
+└── README.md
+```
 
-## 🚀 Installation
+## Installation
 
-### 1. Prérequis
-- Python 3.8 ou supérieur
-- Clé API Scopus (gratuite sur https://dev.elsevier.com/)
-- 4GB RAM minimum (8GB recommandé)
+### Prérequis
 
-### 2. Installation des dépendances
+- Python 3.8+
+- 4 Go de RAM minimum
+- Clé API Scopus
 
-\`\`\`bash
-# Cloner ou télécharger le projet
-cd scopus_chatbot
+### Installation des dépendances
 
-# Installer les packages Python
+```bash
 pip install -r requirements.txt
+```
 
-# Ou installation manuelle :
+Ou manuellement :
+
+```bash
 pip install pandas numpy requests sentence-transformers faiss-cpu chromadb streamlit plotly scikit-learn transformers torch
-\`\`\`
+```
 
-### 3. Configuration de l'API Scopus
+## Configuration
 
-1. Créez un compte sur https://dev.elsevier.com/
-2. Obtenez votre clé API gratuite
-3. Modifiez le fichier `scripts/1_extract_scopus_data.py` :
-   ```python
-   API_KEY = "VOTRE_CLE_API_ICI"
-   \`\`\`
+### Configuration de l'API Scopus
 
-## ⚙️ Configuration
+1. Créer un compte sur le portail développeur d'Elsevier
+2. Obtenir une clé API gratuite
+3. Configurer la clé dans `scripts/1_extract_scopus_data.py` :
 
-### Paramètres d'extraction
-Dans `1_extract_scopus_data.py`, vous pouvez modifier :
-- Les requêtes de recherche
-- Le nombre d'articles à extraire
-- Les champs de données à récupérer
+```python
+API_KEY = "VOTRE_CLE_API_SCOPUS"
+```
 
-### Paramètres de recherche sémantique
-Dans `3_semantic_indexing.py` :
-- Modèle de sentence transformer (défaut: 'all-MiniLM-L6-v2')
-- Paramètres FAISS et ChromaDB
+## Utilisation
 
-## 🎮 Utilisation
+### Méthode rapide
 
+```bash
+python scripts/6_run_complete_pipeline.py
+```
 
-#### Étape 1: Extraction des données
-\`\`\`bash
+### Étapes détaillées
+
+#### 1. Extraction des données
+```bash
 python scripts/1_extract_scopus_data.py
-\`\`\`
-- Extrait les articles depuis Scopus
-- Crée `raw_scopus_data.csv`
+```
 
-#### Étape 2: Nettoyage et stockage
-\`\`\`bash
+#### 2. Nettoyage et stockage
+```bash
 python scripts/2_clean_and_store_data.py
-\`\`\`
-- Nettoie les données
-- Crée la base SQLite `scopus_database.db`
+```
 
-#### Étape 3: Indexation sémantique
-\`\`\`bash
+#### 3. Indexation sémantique
+```bash
 python scripts/3_semantic_indexing.py
-\`\`\`
-- Crée les index FAISS et ChromaDB
-- Génère les embeddings sémantiques
+```
 
-#### Étape 4: Lancement du chatbot
-\`\`\`bash
+#### 4. Lancement du chatbot
+```bash
 streamlit run scripts/4_streamlit_chatbot.py
-\`\`\`
+```
 
-## 📊 Structure des Données
+Accéder à l'interface : http://localhost:8501
 
-### Tables Principales
-- **articles**: Informations des publications
-- **authors**: Données des auteurs
-- **affiliations**: Institutions de recherche
-- **article_authors**: Relations article-auteur
+## Structure des Données
 
-### Champs Clés
-- `title`: Titre de l'article
-- `abstract`: Résumé
-- `keywords`: Mots-clés
-- `year`: Année de publication
-- `doi`: Identifiant DOI
-- `citation_count`: Nombre de citations
+### Tables principales
 
-## 🛠️ Technologies Utilisées
+**Articles**
+- id, title, abstract, keywords
+- year, doi, citation_count
+- source_title, authors
+
+**Authors**
+- id, name, affiliation, email
+
+**Article_Authors**
+- article_id, author_id
+
+## Technologies Utilisées
 
 ### Backend
-- **Python 3.8+**: Langage principal
-- **SQLite**: Base de données relationnelle
-- **Pandas**: Manipulation de données
-- **Requests**: Appels API
+- Python 3.8+
+- SQLite
+- Pandas
+- Requests
 
 ### Intelligence Artificielle
-- **Sentence Transformers**: Embeddings sémantiques
-- **FAISS**: Recherche vectorielle rapide
-- **ChromaDB**: Base de données vectorielle
-- **Transformers**: Modèles de langage
+- Sentence Transformers
+- FAISS
+- ChromaDB
 
-### Interface Utilisateur
-- **Streamlit**: Interface web interactive
-- **Plotly**: Visualisations dynamiques
+### Interface
+- Streamlit
+- Plotly
 
-## 🔧 Dépannage
+## Exemples d'Utilisation
 
-### Problèmes Courants
+### Questions types
 
-#### 1. Erreur d'API Scopus
-\`\`\`
+```
+"Quelles sont les dernières recherches en intelligence artificielle ?"
+"Trouve des articles sur le machine learning médical"
+"Articles sur le NLP depuis 2020"
+"Qui sont les auteurs principaux en computer vision ?"
+```
+
+### Filtres disponibles
+
+- Par année de publication
+- Par auteur
+- Par domaine de recherche
+- Par revue scientifique
+- Par nombre de citations
+
+## Résolution de Problèmes
+
+### Erreurs communes
+
+**Clé API invalide**
+```
 Erreur: Invalid API key
-\`\`\`
-**Solution**: Vérifiez votre clé API dans `1_extract_scopus_data.py`
+Solution: Vérifier la clé dans 1_extract_scopus_data.py
+```
 
-#### 2. Mémoire insuffisante
-\`\`\`
+**Mémoire insuffisante**
+```
 MemoryError during embedding creation
-\`\`\`
-**Solution**: 
-- Réduisez la taille des batches
-- Utilisez un modèle plus léger
-- Augmentez la RAM disponible
+Solution: Réduire la taille des batches
+```
 
-#### 3. Packages manquants
-\`\`\`
-ModuleNotFoundError: No module named 'sentence_transformers'
-\`\`\`
-**Solution**: 
-\`\`\`bash
-pip install sentence-transformers
-\`\`\`
+**Module manquant**
+```
+ModuleNotFoundError: No module named 'xxx'
+Solution: pip install [module_manquant]
+```
 
-#### 4. Base de données corrompue
-\`\`\`
+**Base de données corrompue**
+```
 sqlite3.DatabaseError: database disk image is malformed
-\`\`\`
-**Solution**: Supprimez `scopus_database.db` et relancez l'étape 2
+Solution: Supprimer le fichier .db et relancer l'étape 2
+```
 
-### Optimisations
-
-#### Performance
-- Utilisez `faiss-gpu` si vous avez un GPU
-- Augmentez `batch_size` pour les machines puissantes
-- Utilisez SSD pour le stockage
-
-#### Qualité des Résultats
-- Expérimentez avec différents modèles Sentence Transformers
-- Ajustez les paramètres de recherche
-- Enrichissez les requêtes d'extraction
-
-## 📈 Exemples d'Utilisation
-
-### Questions Types
-- "Quelles sont les dernières recherches sur l'IA ?"
-- "Trouve des articles sur le machine learning médical"
-- "Combien d'articles parlent de NLP depuis 2020 ?"
-- "Qui sont les auteurs principaux en computer vision ?"
-
-### Filtres Disponibles
-- **Par année**: Articles depuis une année donnée
-- **Par auteur**: Publications d'un chercheur spécifique
-- **Par domaine**: Filtrage par sujet de recherche
-- **Par revue**: Articles d'une publication particulière
-
-## 🤝 Contribution
+## Contribution
 
 Pour contribuer au projet :
-1. Forkez le repository
-2. Créez une branche feature
-3. Committez vos changements
-4. Ouvrez une Pull Request
 
-## 📄 Licence
+1. Fork le repository
+2. Créer une branche feature
+3. Commiter les changements
+4. Pusher vers la branche
+5. Ouvrir une Pull Request
+
+## Licence
 
 Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
 
-## 📞 Support
+## Support
+
+### Ressources utiles
+
+- [Documentation API Scopus](https://dev.elsevier.com/documentation/ScopusSearchAPI.wadl)
+- [Guide Streamlit](https://docs.streamlit.io/)
+- [Sentence-Transformers](https://www.sbert.net/)
+- [FAISS Documentation](https://github.com/facebookresearch/faiss/wiki)
+
+### Contact
 
 Pour toute question ou problème :
-- Ouvrez une issue sur GitHub
-- Consultez la documentation Scopus API
-- Vérifiez les logs d'erreur dans la console
+- Consulter la documentation
+- Vérifier les issues GitHub
+- Créer une nouvelle issue si nécessaire
 
 ---
 
-**Développé avec ❤️ pour la recherche scientifique**
+Développé pour faciliter la recherche scientifique
