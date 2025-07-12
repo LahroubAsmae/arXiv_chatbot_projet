@@ -1,5 +1,5 @@
 """
-ÉTAPE 4 : Interface Chatbot Streamlit
+ÉTAPE 4 : Interface Chatbot Scopus Professionnelle
 Interface web pour interroger la base d'articles Scopus
 """
 import streamlit as st
@@ -10,10 +10,89 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import pickle
 import plotly.express as px
-import plotly.graph_objects as go
 from pathlib import Path
-import json
-from datetime import datetime
+
+# Configuration CSS personnalisée
+st.markdown("""
+<style>
+    .header-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1a3c6c;
+        margin-bottom: 10px;
+    }
+    .header-subtitle {
+        font-size: 16px;
+        color: #4a6fa5;
+        margin-bottom: 30px;
+    }
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a3c6c;
+        margin: 25px 0 15px 0;
+        border-bottom: 1px solid #e1e8ed;
+        padding-bottom: 8px;
+    }
+    .metric-card {
+        background-color: #f8fafc;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 10px 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid #e1e8ed;
+    }
+    .article-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e1e8ed;
+        transition: all 0.3s ease;
+    }
+    .article-card:hover {
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    .search-box {
+        background-color: #f8fafc;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        border: 1px solid #e1e8ed;
+    }
+    .result-highlight {
+        background-color: #e6f2ff;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #1a73e8;
+    }
+    .tabs-container {
+        margin-top: 30px;
+    }
+    .stButton>button {
+        background-color: #1a73e8;
+        color: white;
+        border-radius: 6px;
+        border: none;
+        padding: 8px 16px;
+        font-weight: 500;
+    }
+    .stButton>button:hover {
+        background-color: #1557b0;
+        color: white;
+    }
+    .clear-btn {
+        background-color: #f1f3f4 !important;
+        color: #5f6368 !important;
+    }
+    .clear-btn:hover {
+        background-color: #e8eaed !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 class ScopusChatbot:
     def __init__(self):
@@ -25,8 +104,8 @@ class ScopusChatbot:
         
         # Configuration de la page Streamlit
         st.set_page_config(
-            page_title="🔬 Scopus Research Chatbot",
-            page_icon="🔬",
+            page_title="Scopus Research Assistant",
+            page_icon=":books:",
             layout="wide",
             initial_sidebar_state="expanded"
         )
@@ -85,13 +164,13 @@ class ScopusChatbot:
     
     def setup_chatbot(self):
         """Initialise le chatbot"""
-        with st.spinner("🔧 Initialisation du chatbot..."):
+        with st.spinner("Initialisation du système..."):
             self.model = self.load_model()
             self.faiss_index, self.article_ids = self.load_faiss_index()
             self.articles_df = self.load_articles_data()
         
         if self.faiss_index is None:
-            st.error("❌ Index FAISS non trouvé. Exécutez d'abord l'étape 3 (indexation sémantique)")
+            st.error("Index FAISS non trouvé. Veuillez exécuter l'étape d'indexation sémantique.")
             st.stop()
     
     def semantic_search(self, query, k=5):
@@ -128,98 +207,86 @@ class ScopusChatbot:
     def generate_answer(self, query, search_results):
         """Génère une réponse basée sur les résultats de recherche"""
         if not search_results:
-            return "❌ Aucun article pertinent trouvé pour votre question."
-        
-        # Analyse de la requête pour personnaliser la réponse
-        query_lower = query.lower()
+            return "Aucun résultat trouvé pour votre requête."
         
         # Construction de la réponse
         answer_parts = []
         
-        # Introduction contextuelle
-        if any(word in query_lower for word in ['artificial intelligence', 'ai', 'intelligence artificielle']):
-            answer_parts.append("🤖 **Concernant l'Intelligence Artificielle dans votre corpus :**")
-        elif any(word in query_lower for word in ['machine learning', 'apprentissage automatique']):
-            answer_parts.append("🧠 **Concernant l'Apprentissage Automatique dans votre corpus :**")
-        elif any(word in query_lower for word in ['endoscopy', 'endoscopie']):
-            answer_parts.append("🏥 **Concernant l'Endoscopie dans votre corpus :**")
-        else:
-            answer_parts.append(f"🔍 **Résultats pour votre recherche '{query}' :**")
+        answer_parts.append(f"**Votre recherche :** \"{query}\"")
+        answer_parts.append(f"**Articles pertinents :** {len(search_results)} résultats trouvés")
         
-        # Résumé des résultats
         top_result = search_results[0]
-        answer_parts.append(f"\n**Article le plus pertinent** (score: {top_result['score']:.3f}) :")
-        answer_parts.append(f"📄 *{top_result['article']['title']}*")
-        answer_parts.append(f"📅 Année: {top_result['article']['year']}")
-        answer_parts.append(f"📖 Journal: {top_result['article']['publication_name']}")
+        answer_parts.append(f"\n**Article le plus pertinent :**")
+        answer_parts.append(f"- **Titre :** {top_result['article']['title']}")
+        answer_parts.append(f"- **Année :** {top_result['article']['year']}")
+        answer_parts.append(f"- **Journal :** {top_result['article']['publication_name']}")
+        answer_parts.append(f"- **Score de pertinence :** {top_result['score']:.3f}")
         
         # Analyse des tendances
         years = [r['article']['year'] for r in search_results if r['article']['year']]
         if years:
             avg_year = sum(years) / len(years)
-            answer_parts.append(f"\n📊 **Analyse des résultats :**")
-            answer_parts.append(f"• {len(search_results)} articles pertinents trouvés")
-            answer_parts.append(f"• Année moyenne des publications: {avg_year:.0f}")
-            answer_parts.append(f"• Score de pertinence moyen: {np.mean([r['score'] for r in search_results]):.3f}")
-        
-        # Suggestions
-        answer_parts.append(f"\n💡 **Suggestions :**")
-        answer_parts.append("• Consultez les détails des articles ci-dessous")
-        answer_parts.append("• Utilisez les mots-clés des articles pour affiner votre recherche")
-        answer_parts.append("• Explorez les articles connexes par année ou journal")
+            answer_parts.append(f"\n**Analyse des résultats :**")
+            answer_parts.append(f"- Année moyenne : {avg_year:.0f}")
+            answer_parts.append(f"- Score moyen : {np.mean([r['score'] for r in search_results]):.3f}")
         
         return "\n".join(answer_parts)
     
     def display_article_card(self, article, score=None):
-        """Affiche une carte d'article"""
+        """Affiche une carte d'article professionnelle"""
         with st.container():
-            col1, col2 = st.columns([3, 1])
+            st.markdown(f'<div class="article-card">', unsafe_allow_html=True)
+            
+            col1, col2 = st.columns([4, 1])
             
             with col1:
                 # Titre avec lien DOI si disponible
                 if article.get('doi'):
-                    st.markdown(f"### 📄 [{article['title']}](https://doi.org/{article['doi']})")
+                    st.markdown(f"<h4>{article['title']}</h4>", unsafe_allow_html=True)
+                    st.markdown(f"[Accéder à l'article](https://doi.org/{article['doi']})", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"### 📄 {article['title']}")
+                    st.markdown(f"<h4>{article['title']}</h4>", unsafe_allow_html=True)
                 
                 # Informations de base
-                col_info1, col_info2, col_info3 = st.columns(3)
-                with col_info1:
-                    st.metric("📅 Année", article.get('year', 'N/A'))
-                with col_info2:
-                    st.metric("📊 Citations", article.get('citation_count', 0))
-                with col_info3:
-                    if score is not None:
-                        st.metric("🎯 Score", f"{score:.3f}")
-                
-                # Journal
                 if article.get('publication_name'):
-                    st.markdown(f"**📖 Journal:** {article['publication_name']}")
+                    st.markdown(f"**Journal:** {article['publication_name']}")
                 
-                # Mots-clés
+                if article.get('year'):
+                    st.markdown(f"**Année:** {article['year']}")
+                
                 if article.get('keywords'):
-                    st.markdown(f"**🏷️ Mots-clés:** {article['keywords']}")
+                    st.markdown(f"**Mots-clés:** {article['keywords']}")
                 
                 # Résumé (si disponible)
                 if article.get('abstract'):
-                    with st.expander("📝 Résumé"):
+                    with st.expander("Voir le résumé"):
                         st.write(article['abstract'])
             
             with col2:
-                # Informations techniques
-                st.markdown("**🔍 Détails:**")
-                st.markdown(f"**ID Scopus:** `{article.get('scopus_id', 'N/A')}`")
-                if article.get('subject_areas'):
-                    st.markdown(f"**Domaines:** {article['subject_areas']}")
+                # Metrics
+                st.markdown(f'<div class="metric-card">', unsafe_allow_html=True)
+                
+                if article.get('citation_count'):
+                    st.markdown(f"**Citations:** {article['citation_count']}")
+                else:
+                    st.markdown(f"**Citations:** 0")
+                
+                if score is not None:
+                    st.markdown(f"**Score:** {score:.3f}")
+                
+                if article.get('scopus_id'):
+                    st.markdown(f"**ID Scopus:** {article['scopus_id']}")
+                
+                st.markdown('</div>', unsafe_allow_html=True)
             
-            st.divider()
+            st.markdown('</div>', unsafe_allow_html=True)
     
     def create_visualizations(self):
         """Crée les visualisations des données"""
         if self.articles_df.empty:
             return
         
-        st.subheader("📊 Analyse de votre corpus")
+        st.markdown('<div class="section-title">Analyse du corpus</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         
@@ -229,10 +296,10 @@ class ScopusChatbot:
             fig_years = px.bar(
                 x=year_counts.index, 
                 y=year_counts.values,
-                title="📅 Distribution des articles par année",
+                title="Distribution par année",
                 labels={'x': 'Année', 'y': 'Nombre d\'articles'}
             )
-            fig_years.update_layout(showlegend=False)
+            fig_years.update_layout(showlegend=False, plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig_years, use_container_width=True)
         
         with col2:
@@ -240,9 +307,11 @@ class ScopusChatbot:
             fig_citations = px.histogram(
                 self.articles_df, 
                 x='citation_count',
-                title="📈 Distribution des citations",
-                labels={'citation_count': 'Nombre de citations', 'count': 'Nombre d\'articles'}
+                title="Distribution des citations",
+                labels={'citation_count': 'Nombre de citations', 'count': 'Nombre d\'articles'},
+                nbins=20
             )
+            fig_citations.update_layout(plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig_citations, use_container_width=True)
         
         # Top journaux
@@ -252,59 +321,64 @@ class ScopusChatbot:
                 fig_journals = px.pie(
                     values=journal_counts.values,
                     names=journal_counts.index,
-                    title="📖 Top 5 des journaux"
+                    title="Top 5 des journaux"
                 )
                 st.plotly_chart(fig_journals, use_container_width=True)
     
     def run_interface(self):
         """Lance l'interface principale"""
         # En-tête
-        st.title("🔬 Scopus Research Chatbot")
-        st.markdown("*Interrogez intelligemment votre corpus d'articles scientifiques*")
+        st.markdown('<div class="header-title">Scopus Research Assistant</div>', unsafe_allow_html=True)
+        st.markdown('<div class="header-subtitle">Interrogez intelligemment votre corpus d\'articles scientifiques</div>', unsafe_allow_html=True)
         
         # Sidebar avec statistiques
         with st.sidebar:
-            st.header("📊 Statistiques du corpus")
+            st.markdown('<div class="section-title">Statistiques du corpus</div>', unsafe_allow_html=True)
             
             if not self.articles_df.empty:
-                st.metric("📚 Total articles", len(self.articles_df))
-                st.metric("📅 Années couvertes", 
-                         f"{self.articles_df['year'].min():.0f} - {self.articles_df['year'].max():.0f}")
-                st.metric("📈 Citations totales", self.articles_df['citation_count'].sum())
-                st.metric("🧠 Vecteurs indexés", len(self.article_ids))
+                st.markdown(f'<div class="metric-card"><b>Articles indexés</b><br>{len(self.articles_df)}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><b>Années couvertes</b><br>{self.articles_df["year"].min():.0f} - {self.articles_df["year"].max():.0f}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><b>Citations totales</b><br>{self.articles_df["citation_count"].sum()}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><b>Vecteurs indexés</b><br>{len(self.article_ids)}</div>', unsafe_allow_html=True)
             
             st.divider()
             
             # Exemples de questions
-            st.subheader("💡 Exemples de questions")
+            st.markdown('<div class="section-title">Exemples de requêtes</div>', unsafe_allow_html=True)
             example_queries = [
-                "Articles sur l'IA médicale",
-                "Machine learning pour les matériaux",
-                "Endoscopie assistée par IA",
-                "Réseaux de neurones",
-                "Intelligence artificielle 2026"
+                "Recherche sur l'IA médicale",
+                "Applications du machine learning",
+                "Études récentes en endoscopie",
+                "Développements en intelligence artificielle",
+                "Articles sur les réseaux de neurones"
             ]
             
             for query in example_queries:
-                if st.button(f"🔍 {query}", key=f"example_{query}"):
+                if st.button(query, key=f"example_{query}"):
                     st.session_state.query_input = query
         
-        # Interface de chat principale
-        st.subheader("💬 Posez votre question")
+        # Section de recherche
+        st.markdown('<div class="section-title">Recherche scientifique</div>', unsafe_allow_html=True)
         
-        # Zone de saisie
-        query = st.text_input(
-            "Tapez votre question ici:",
-            placeholder="Ex: Quels sont les articles sur l'intelligence artificielle en médecine ?",
-            key="query_input"
-        )
-        
-        # Bouton de recherche
-        col1, col2, col3 = st.columns([1, 1, 4])
-        with col1:
-            search_button = st.button("🔍 Rechercher", type="primary")
-        with col2:
-            clear_button = st.button("🗑️ Effacer")
+        with st.container():
+            st.markdown('<div class="search-box">', unsafe_allow_html=True)
+            
+            # Zone de saisie
+            query = st.text_input(
+                "Tapez votre question ici :",
+                placeholder="Ex: Quels sont les articles sur l'intelligence artificielle en médecine ?",
+                key="query_input",
+                label_visibility="collapsed"
+            )
+            
+            # Boutons
+            col1, col2, _ = st.columns([1, 1, 8])
+            with col1:
+                search_button = st.button("Rechercher", type="primary")
+            with col2:
+                clear_button = st.button("Effacer", key="clear_btn")
+            
+            st.markdown('</div>', unsafe_allow_html=True)
         
         if clear_button:
             st.session_state.query_input = ""
@@ -312,7 +386,7 @@ class ScopusChatbot:
         
         # Traitement de la recherche
         if search_button and query:
-            with st.spinner("🔍 Recherche en cours..."):
+            with st.spinner("Analyse en cours..."):
                 # Recherche sémantique
                 results = self.semantic_search(query, k=5)
                 
@@ -321,38 +395,39 @@ class ScopusChatbot:
                     answer = self.generate_answer(query, results)
                     
                     # Affichage de la réponse
-                    st.subheader("🤖 Réponse du chatbot")
-                    st.markdown(answer)
+                    st.markdown('<div class="section-title">Résultats de recherche</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="result-highlight">{answer}</div>', unsafe_allow_html=True)
                     
                     # Affichage des articles trouvés
-                    st.subheader("📚 Articles pertinents")
+                    st.markdown('<div class="section-title">Articles pertinents</div>', unsafe_allow_html=True)
                     
                     for i, result in enumerate(results, 1):
-                        st.markdown(f"#### 📄 Résultat {i}")
+                        st.markdown(f"#### Résultat {i}")
                         self.display_article_card(result['article'], result['score'])
                 else:
-                    st.warning("❌ Aucun article pertinent trouvé. Essayez avec d'autres mots-clés.")
+                    st.warning("Aucun résultat trouvé. Veuillez reformuler votre requête.")
         
         # Onglets pour fonctionnalités supplémentaires
-        tab1, tab2, tab3 = st.tabs(["📊 Visualisations", "📚 Tous les articles", "ℹ️ À propos"])
+        st.markdown('<div class="tabs-container">', unsafe_allow_html=True)
+        tab1, tab2, tab3 = st.tabs(["Analyse du corpus", "Base documentaire", "À propos"])
         
         with tab1:
             self.create_visualizations()
         
         with tab2:
-            st.subheader("📚 Corpus complet")
+            st.markdown('<div class="section-title">Base documentaire complète</div>', unsafe_allow_html=True)
             if not self.articles_df.empty:
                 # Filtres
                 col1, col2 = st.columns(2)
                 with col1:
                     year_filter = st.selectbox(
-                        "Filtrer par année:",
+                        "Filtrer par année :",
                         ["Toutes"] + sorted(self.articles_df['year'].dropna().unique().tolist(), reverse=True)
                     )
                 with col2:
                     sort_by = st.selectbox(
-                        "Trier par:",
-                        ["Année (desc)", "Année (asc)", "Citations (desc)", "Titre"]
+                        "Trier par :",
+                        ["Année (récent)", "Année (ancien)", "Citations", "Titre"]
                     )
                 
                 # Application des filtres
@@ -361,11 +436,11 @@ class ScopusChatbot:
                     filtered_df = filtered_df[filtered_df['year'] == year_filter]
                 
                 # Tri
-                if sort_by == "Année (desc)":
+                if sort_by == "Année (récent)":
                     filtered_df = filtered_df.sort_values('year', ascending=False)
-                elif sort_by == "Année (asc)":
+                elif sort_by == "Année (ancien)":
                     filtered_df = filtered_df.sort_values('year', ascending=True)
-                elif sort_by == "Citations (desc)":
+                elif sort_by == "Citations":
                     filtered_df = filtered_df.sort_values('citation_count', ascending=False)
                 elif sort_by == "Titre":
                     filtered_df = filtered_df.sort_values('title')
@@ -375,34 +450,34 @@ class ScopusChatbot:
                     self.display_article_card(article.to_dict())
         
         with tab3:
-            st.subheader("ℹ️ À propos de ce chatbot")
+            st.markdown('<div class="section-title">À propos du système</div>', unsafe_allow_html=True)
             st.markdown("""
-            ### 🎓 Projet Scopus Chatbot
+            **Scopus Research Assistant** est une plateforme d'analyse scientifique permettant d'explorer et d'interroger un corpus de publications académiques.
             
-            **Développé dans le cadre du cours de [Nom du cours]**
+            #### Fonctionnalités principales
+            - Recherche sémantique avancée
+            - Analyse bibliométrique
+            - Exploration thématique
+            - Visualisation des tendances de recherche
             
-            #### 🔧 Technologies utilisées:
-            - **Extraction de données**: API Scopus
-            - **Nettoyage**: Pandas, SQLite
-            - **Indexation sémantique**: Sentence Transformers, FAISS
+            #### Technologies utilisées
+            - **Moteur de recherche**: FAISS (Facebook AI Similarity Search)
+            - **Modèle sémantique**: all-MiniLM-L6-v2
+            - **Base de données**: SQLite
             - **Interface**: Streamlit
-            - **Visualisations**: Plotly
             
-            #### 📊 Corpus analysé:
-            - **Articles**: 10 publications scientifiques
-            - **Domaines**: Intelligence Artificielle, Machine Learning
-            - **Période**: 2026
-            - **Sources**: Base Scopus
+            #### Caractéristiques du corpus
+            - **Articles indexés**: 10 publications
+            - **Période couverte**: 2026
+            - **Domaines**: Intelligence Artificielle, Machine Learning, Informatique Médicale
             
-            #### 🚀 Fonctionnalités:
-            - ✅ Recherche sémantique intelligente
-            - ✅ Réponses contextualisées
-            - ✅ Visualisations interactives
-            - ✅ Interface web moderne
-            
-            ---
-            *Développé avec ❤️ pour l'analyse scientifique*
+            Ce système a été développé à des fins de recherche et démonstration.
             """)
+            
+            st.divider()
+            st.markdown("© 2023 Scopus Research Assistant | Tous droits réservés")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 def main():
     """Fonction principale"""
@@ -410,8 +485,8 @@ def main():
         chatbot = ScopusChatbot()
         chatbot.run_interface()
     except Exception as e:
-        st.error(f"❌ Erreur lors de l'initialisation: {e}")
-        st.info("📋 Vérifiez que les étapes précédentes ont été exécutées correctement.")
+        st.error(f"Erreur lors de l'initialisation: {e}")
+        st.info("Veuillez vérifier la configuration du système.")
 
 if __name__ == "__main__":
     main()
