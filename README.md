@@ -19,22 +19,30 @@ Ce projet implémente un chatbot conversationnel capable d'interroger une base d
 
 ```
 scopus_chatbot/
-├── scripts/
-│   ├── 1_extract_scopus_data.py
-│   ├── 2_clean_and_store_data.py
-│   ├── 3_semantic_indexing.py
-│   ├── 4_streamlit_chatbot.py
-│   ├── 5_requirements.py
-│   ├── 6_run_complete_pipeline.py
-│   └── database_schema.sql
+├── .vscode/                          # Configuration VS Code
+├── config/
+│   ├── __pycache__/
+│   └── api_config.py                 # Configuration API Scopus
 ├── data/
-│   ├── raw_scopus_data.csv
-│   ├── scopus_database.db
-│   ├── scopus_faiss.index
-│   └── faiss_metadata.pkl
-├── chroma_db/
-├── requirements.txt
-└── README.md
+│   ├── embeddings/
+│   │   └── article_embeddings.pkl   # Embeddings pré-calculés
+│   ├── indexes/                      # Index de recherche
+│   ├── processed/
+│   │   └── scopus_database.db       # Base de données SQLite
+│   └── raw/
+│       ├── test_extraction.csv      # Données brutes CSV
+│       └── test_extraction.json     # Données brutes JSON
+├── logs/                            # Fichiers de logs
+├── src/
+│   ├── chatbot_interface.py         # Interface utilisateur Streamlit
+│   ├── data_processor.py            # Traitement des données
+│   ├── scopus_extractor.py          # Extraction API Scopus
+│   └── semantic_indexer.py          # Indexation sémantique
+├── venv/                            # Environnement virtuel
+├── .env                             # Variables d'environnement
+├── README.md                        # Documentation
+├── requirements.txt                 # Dépendances Python
+└── validate_step2.py                # Validation des étapes
 ```
 
 ## Installation
@@ -48,13 +56,21 @@ scopus_chatbot/
 ### Installation des dépendances
 
 ```bash
+# Cloner le repository
+git clone https://github.com/votre-username/scopus-chatbot.git
+cd scopus-chatbot
+
+# Créer un environnement virtuel
+python -m venv venv
+
+# Activer l'environnement virtuel
+# Windows
+venv\Scripts\activate
+# Linux/Mac
+source venv/bin/activate
+
+# Installer les dépendances
 pip install -r requirements.txt
-```
-
-Ou manuellement :
-
-```bash
-pip install pandas numpy requests sentence-transformers faiss-cpu chromadb streamlit plotly scikit-learn transformers torch
 ```
 
 ## Configuration
@@ -63,85 +79,109 @@ pip install pandas numpy requests sentence-transformers faiss-cpu chromadb strea
 
 1. Créer un compte sur le portail développeur d'Elsevier
 2. Obtenir une clé API gratuite
-3. Configurer la clé dans `scripts/1_extract_scopus_data.py` :
+3. Configurer la clé dans `config/api_config.py` :
 
 ```python
 API_KEY = "VOTRE_CLE_API_SCOPUS"
+BASE_URL = "https://api.elsevier.com/content/search/scopus"
+```
+
+### Variables d'environnement
+
+Créer un fichier `.env` à la racine du projet :
+
+```env
+SCOPUS_API_KEY=your_api_key_here
+DATABASE_PATH=data/processed/scopus_database.db
+EMBEDDINGS_PATH=data/embeddings/article_embeddings.pkl
 ```
 
 ## Utilisation
 
-### Méthode rapide
-
-```bash
-python scripts/6_run_complete_pipeline.py
-```
-
-### Étapes détaillées
+### Étapes d'exécution
 
 #### 1. Extraction des données
 ```bash
-python scripts/1_extract_scopus_data.py
+python src/scopus_extractor.py
 ```
+**Résultat :** Données sauvegardées dans `data/raw/`
 
-#### 2. Nettoyage et stockage
+#### 2. Traitement des données
 ```bash
-python scripts/2_clean_and_store_data.py
+python src/data_processor.py
 ```
+**Résultat :** Base de données créée dans `data/processed/scopus_database.db`
 
 #### 3. Indexation sémantique
 ```bash
-python scripts/3_semantic_indexing.py
+python src/semantic_indexer.py
+```
+**Résultat :** Embeddings sauvegardés dans `data/embeddings/`
+
+#### 4. Validation (optionnel)
+```bash
+python validate_step2.py
 ```
 
-#### 4. Lancement du chatbot
+#### 5. Lancement du chatbot
 ```bash
-streamlit run scripts/4_streamlit_chatbot.py
+streamlit run src/chatbot_interface.py
 ```
 
 Accéder à l'interface : http://localhost:8501
 
 ## Structure des Données
 
-### Tables principales
+### Base de données SQLite
 
-**Articles**
-- id, title, abstract, keywords
-- year, doi, citation_count
-- source_title, authors
+**Table Articles**
+- id : Identifiant unique
+- title : Titre de l'article
+- abstract : Résumé
+- keywords : Mots-clés
+- year : Année de publication
+- doi : Identifiant DOI
+- citation_count : Nombre de citations
+- source_title : Nom de la revue
+- authors : Auteurs
 
-**Authors**
-- id, name, affiliation, email
+### Formats de données
 
-**Article_Authors**
-- article_id, author_id
+**CSV** (`data/raw/test_extraction.csv`)
+- Format tabulaire pour analyse
+- Colonnes : title, abstract, authors, year, doi, citations
+
+**JSON** (`data/raw/test_extraction.json`)
+- Format structuré pour l'API
+- Métadonnées complètes des articles
 
 ## Technologies Utilisées
 
 ### Backend
-- Python 3.8+
-- SQLite
-- Pandas
-- Requests
+- **Python 3.8+** : Langage principal
+- **SQLite** : Base de données relationnelle
+- **Pandas** : Manipulation de données
+- **Requests** : Appels API
 
 ### Intelligence Artificielle
-- Sentence Transformers
-- FAISS
-- ChromaDB
+- **Sentence Transformers** : Génération d'embeddings
+- **FAISS** : Recherche vectorielle rapide
+- **ChromaDB** : Base vectorielle flexible
 
 ### Interface
-- Streamlit
-- Plotly
+- **Streamlit** : Interface web interactive
+- **Plotly** : Visualisations dynamiques
 
 ## Exemples d'Utilisation
 
 ### Questions types
 
-```
+```python
 "Quelles sont les dernières recherches en intelligence artificielle ?"
 "Trouve des articles sur le machine learning médical"
 "Articles sur le NLP depuis 2020"
 "Qui sont les auteurs principaux en computer vision ?"
+"Montre-moi les tendances de recherche en deep learning"
 ```
 
 ### Filtres disponibles
@@ -159,13 +199,13 @@ Accéder à l'interface : http://localhost:8501
 **Clé API invalide**
 ```
 Erreur: Invalid API key
-Solution: Vérifier la clé dans 1_extract_scopus_data.py
+Solution: Vérifier la clé dans config/api_config.py ou .env
 ```
 
 **Mémoire insuffisante**
 ```
 MemoryError during embedding creation
-Solution: Réduire la taille des batches
+Solution: Réduire la taille des batches dans semantic_indexer.py
 ```
 
 **Module manquant**
@@ -177,8 +217,29 @@ Solution: pip install [module_manquant]
 **Base de données corrompue**
 ```
 sqlite3.DatabaseError: database disk image is malformed
-Solution: Supprimer le fichier .db et relancer l'étape 2
+Solution: Supprimer data/processed/scopus_database.db et relancer data_processor.py
 ```
+
+**Problème d'environnement virtuel**
+```
+Erreur: Module non trouvé malgré l'installation
+Solution: Vérifier que l'environnement virtuel est activé
+```
+
+## Développement
+
+### Structure du code
+
+- `src/scopus_extractor.py` : Extraction des données via API
+- `src/data_processor.py` : Nettoyage et structuration
+- `src/semantic_indexer.py` : Création des embeddings
+- `src/chatbot_interface.py` : Interface utilisateur
+- `config/api_config.py` : Configuration centralisée
+- `validate_step2.py` : Tests de validation
+
+### Logs et debugging
+
+Les logs sont sauvegardés dans le dossier `logs/` pour faciliter le debugging.
 
 ## Contribution
 
@@ -207,8 +268,8 @@ Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
 
 Pour toute question ou problème :
 - Consulter la documentation
-- Vérifier les issues GitHub
-- Créer une nouvelle issue si nécessaire
+- Vérifier les logs dans le dossier `logs/`
+- Créer une issue GitHub si nécessaire
 
 ---
 
