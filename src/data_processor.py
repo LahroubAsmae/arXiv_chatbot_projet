@@ -1,6 +1,5 @@
 """
 ÉTAPE 2 : Nettoyage et stockage des données Scopus
-Conforme aux spécifications du professeur
 """
 import pandas as pd
 import sqlite3

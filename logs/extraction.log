@@ -65,3 +65,15 @@
 2025-07-06 17:26:24,191 - INFO - Traité 10/10 articles
 2025-07-06 17:26:24,304 - INFO - Extraction terminée: 10 articles récupérés
 2025-07-06 17:26:24,313 - INFO - Données sauvegardées: C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.json et C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.csv
+2025-07-10 15:45:38,264 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence)
+2025-07-10 15:45:38,871 - INFO - Total d'articles disponibles: 708155
+2025-07-10 15:45:38,872 - INFO - Articles à extraire: 10
+2025-07-10 15:45:39,493 - INFO - Traité 10/10 articles
+2025-07-10 15:45:39,606 - INFO - Extraction terminée: 10 articles récupérés
+2025-07-10 15:45:39,616 - INFO - Données sauvegardées: C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.json et C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.csv
+2025-07-12 15:27:07,783 - INFO - Début extraction pour: TITLE-ABS-KEY(artificial intelligence)
+2025-07-12 15:27:08,493 - INFO - Total d'articles disponibles: 708564
+2025-07-12 15:27:08,494 - INFO - Articles à extraire: 10
+2025-07-12 15:27:09,011 - INFO - Traité 10/10 articles
+2025-07-12 15:27:09,126 - INFO - Extraction terminée: 10 articles récupérés
+2025-07-12 15:27:09,147 - INFO - Données sauvegardées: C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.json et C:\Users\ce pc\Desktop\scopus_chatbot_projet\data\raw\test_extraction.csv
