@@ -17,7 +17,7 @@ class ScopusDataProcessor:
     def setup_database(self):
         """
         ÉTAPE 2.1 : Création de la structure de base de données
-        Selon les spécifications du prof : tables relationnelles
+        Selon les spécifications : tables relationnelles
         """
         print("🏗️ Création de la structure de base de données...")
         
