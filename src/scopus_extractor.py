@@ -1,162 +1,98 @@
 """
-Extracteur Scopus MASSIF - Version pour récupérer beaucoup d'articles
+Extracteur ArXiv MASSIF - Version corrigée avec encodage des requêtes
 Optimisé pour récupérer 100-500 articles en une fois
 """
-import requests
+
+import feedparser
 import json
 import pandas as pd
 from datetime import datetime
 import time
 import os
 from pathlib import Path
+import urllib.parse
+import requests
 
-class MassiveScopusExtractor:
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.base_url = "https://api.elsevier.com/content/search/scopus"
+
+class MassiveArxivExtractor:
+    def __init__(self):
+        self.base_url = "http://export.arxiv.org/api/query"
         self.headers = {
-            'X-ELS-APIKey': api_key,
-            'Accept': 'application/json'
+            'User-Agent': 'MyArxivBot/0.1 (contact: lhroubasmae2018@gmail.com)'
         }
         self.all_articles = []
-        
+
         # Création des dossiers
         Path('data/raw').mkdir(parents=True, exist_ok=True)
         Path('logs').mkdir(exist_ok=True)
-        
-        print("🚀 Extracteur Scopus MASSIF initialisé")
-    
-    def search_articles_batch(self, query, start=0, count=25):
+
+        print("🚀 Extracteur ArXiv MASSIF initialisé")
+
+   
+    def search_articles_batch(self, query, start=0, max_results=25):
         """
-        Recherche un batch d'articles
+        Recherche un batch d'articles via ArXiv API
         """
-        params = {
-            'query': query,
-            'start': start,
-            'count': count,
-            'field': 'dc:identifier,dc:title,dc:creator,prism:publicationName,prism:coverDate,prism:doi,authkeywords,dc:description,citedby-count,prism:aggregationType,subtype,subtypeDescription,source-id,prism:issn'
-        }
-        
-        try:
-            print(f"📡 Requête API - Start: {start}, Count: {count}")
-            response = requests.get(self.base_url, headers=self.headers, params=params)
-            
-            if response.status_code == 200:
-                data = response.json()
-                return data
-            else:
-                print(f"❌ Erreur API: {response.status_code} - {response.text}")
-                return None
-                
-        except Exception as e:
-            print(f"❌ Erreur lors de la requête: {e}")
-            return None
-    
+        # Encodage partiel : ne pas encoder :, ", ()
+        query_encoded = urllib.parse.quote(query, safe=':"()')
+
+        url = f"{self.base_url}?search_query={query_encoded}&start={start}&max_results={max_results}"
+        print(f"📡 Requête API ArXiv - URL: {url}")
+
+        # Utilisation de requests pour inclure User-Agent
+        response = requests.get(url, headers=self.headers)
+        if response.status_code != 200:
+            print(f"⚠️ Erreur API ArXiv: {response.status_code}")
+            return []
+
+        feed = feedparser.parse(response.text)
+        return feed.entries
+
+
     def extract_article_info(self, entry):
         """
-        Extrait les informations d'un article
+        Extrait les informations d'un article ArXiv
         """
         try:
-            # ID Scopus
-            scopus_id = entry.get('dc:identifier', '').replace('SCOPUS_ID:', '')
-            
-            # Titre
-            title = entry.get('dc:title', '')
-            
-            # Auteurs
-            authors = entry.get('dc:creator', '')
-            
-            # Journal
-            publication_name = entry.get('prism:publicationName', '')
-            
-            # Date
-            cover_date = entry.get('prism:coverDate', '')
-            
-            # DOI
-            doi = entry.get('prism:doi', '')
-            
-            # Mots-clés
-            keywords = entry.get('authkeywords', '')
-            
-            # Résumé (description)
-            abstract = entry.get('dc:description', '')
-            
-            # Citations
-            citation_count = entry.get('citedby-count', '0')
-            
-            # Type de document
-            subtype = entry.get('subtypeDescription', '')
-            
-            # Domaines (approximation)
-            subject_areas = subtype
-            
             return {
-                'scopus_id': scopus_id,
-                'title': title,
-                'authors': authors,
-                'publication_name': publication_name,
-                'cover_date': cover_date,
-                'doi': doi,
-                'keywords': keywords,
-                'abstract': abstract,
-                'citation_count': citation_count,
-                'subject_areas': subject_areas,
-                'document_type': subtype
+                'arxiv_id': entry.id.split('/')[-1],
+                'title': entry.title,
+                'authors': [author.name for author in entry.authors],
+                'abstract': entry.summary,
+                'published': entry.published,
+                'pdf_url': next((l.href for l in entry.links if 'pdf' in l.href), None),
+                'categories': [t['term'] for t in entry.tags] if hasattr(entry, 'tags') else []
             }
-            
         except Exception as e:
             print(f"⚠️ Erreur extraction article: {e}")
             return None
-    
+
     def massive_extraction(self, queries, max_articles_per_query=100):
         """
         Extraction massive avec plusieurs requêtes
         """
         print("🎯 DÉBUT DE L'EXTRACTION MASSIVE")
         print("=" * 50)
-        
+
         total_extracted = 0
-        
+
         for i, query in enumerate(queries, 1):
             print(f"\n🔍 REQUÊTE {i}/{len(queries)}: {query}")
             print("-" * 40)
-            
-            # Première requête pour connaître le total
-            initial_data = self.search_articles_batch(query, start=0, count=25)
-            
-            if not initial_data or 'search-results' not in initial_data:
-                print(f"❌ Pas de résultats pour: {query}")
-                continue
-            
-            total_results = int(initial_data['search-results'].get('opensearch:totalResults', 0))
-            print(f"📊 {total_results} articles trouvés pour cette requête")
-            
-            # Limiter le nombre d'articles par requête
-            max_to_extract = min(total_results, max_articles_per_query)
-            print(f"🎯 Extraction de {max_to_extract} articles")
-            
-            # Extraction par batches de 25
+
             extracted_for_query = 0
             start = 0
-            
-            while extracted_for_query < max_to_extract:
-                # Calcul du nombre d'articles à récupérer dans ce batch
-                remaining = max_to_extract - extracted_for_query
-                count = min(25, remaining)
-                
-                # Requête API
-                data = self.search_articles_batch(query, start=start, count=count)
-                
-                if not data or 'search-results' not in data:
-                    print(f"❌ Erreur lors du batch start={start}")
-                    break
-                
-                entries = data['search-results'].get('entry', [])
-                
+
+            while extracted_for_query < max_articles_per_query:
+                remaining = max_articles_per_query - extracted_for_query
+                count = min(50, remaining)  # ArXiv max = 50 par requête
+
+                entries = self.search_articles_batch(query, start=start, max_results=count)
+
                 if not entries:
-                    print(f"ℹ️ Pas d'articles dans ce batch")
+                    print("ℹ️ Pas d'articles dans ce batch")
                     break
-                
+
                 # Traitement des articles
                 for entry in entries:
                     article_info = self.extract_article_info(entry)
@@ -164,25 +100,26 @@ class MassiveScopusExtractor:
                         self.all_articles.append(article_info)
                         extracted_for_query += 1
                         total_extracted += 1
-                
+
                 print(f"  ✅ Batch traité: {len(entries)} articles (+{extracted_for_query} total)")
-                
-                # Pause pour respecter les limites de l'API
-                time.sleep(1)
+
+                time.sleep(3)  # Pause pour éviter surcharge
                 start += count
-            
+
+                if extracted_for_query >= max_articles_per_query:
+                    break
+
             print(f"✅ Requête terminée: {extracted_for_query} articles extraits")
-            
-            # Pause entre les requêtes
+
             if i < len(queries):
                 print("⏳ Pause de 2 secondes...")
                 time.sleep(2)
-        
+
         print(f"\n🎉 EXTRACTION TERMINÉE!")
         print(f"📊 TOTAL: {total_extracted} articles extraits")
-        
+
         return total_extracted
-    
+
     def save_articles(self):
         """
         Sauvegarde tous les articles
@@ -190,115 +127,72 @@ class MassiveScopusExtractor:
         if not self.all_articles:
             print("❌ Aucun article à sauvegarder")
             return
-        
-        # Suppression des doublons basée sur scopus_id
+
+        # Suppression des doublons basée sur arxiv_id
         seen_ids = set()
         unique_articles = []
-        
+
         for article in self.all_articles:
-            if article['scopus_id'] not in seen_ids:
-                seen_ids.add(article['scopus_id'])
+            if article['arxiv_id'] not in seen_ids:
+                seen_ids.add(article['arxiv_id'])
                 unique_articles.append(article)
-        
+
         duplicates_removed = len(self.all_articles) - len(unique_articles)
         if duplicates_removed > 0:
             print(f"🗑️ {duplicates_removed} doublons supprimés")
-        
+
         # Sauvegarde JSON
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        json_filename = f'data/raw/scopus_articles_massive_{timestamp}.json'
-        
+        json_filename = f'data/raw/arxiv_articles_massive_{timestamp}.json'
+
         with open(json_filename, 'w', encoding='utf-8') as f:
             json.dump(unique_articles, f, indent=2, ensure_ascii=False)
-        
+
         # Sauvegarde CSV
-        csv_filename = f'data/raw/scopus_articles_massive_{timestamp}.csv'
+        csv_filename = f'data/raw/arxiv_articles_massive_{timestamp}.csv'
         df = pd.DataFrame(unique_articles)
         df.to_csv(csv_filename, index=False, encoding='utf-8')
-        
+
         print(f"💾 Articles sauvegardés:")
         print(f"  📄 JSON: {json_filename}")
         print(f"  📊 CSV: {csv_filename}")
         print(f"  📈 Total unique: {len(unique_articles)} articles")
-        
-        # Statistiques
-        self.show_statistics(unique_articles)
-        
+
         return json_filename
-    
-    def show_statistics(self, articles):
-        """
-        Affiche des statistiques sur les articles extraits
-        """
-        print(f"\n📊 STATISTIQUES D'EXTRACTION:")
-        print("=" * 30)
-        
-        df = pd.DataFrame(articles)
-        
-        # Articles par année
-        if 'cover_date' in df.columns:
-            df['year'] = pd.to_datetime(df['cover_date'], errors='coerce').dt.year
-            year_counts = df['year'].value_counts().sort_index().tail(10)
-            print(f"📅 Articles par année (top 10):")
-            for year, count in year_counts.items():
-                if pd.notna(year):
-                    print(f"  {int(year)}: {count} articles")
-        
-        # Top journaux
-        if 'publication_name' in df.columns:
-            journal_counts = df['publication_name'].value_counts().head(5)
-            print(f"\n📰 Top 5 journaux:")
-            for journal, count in journal_counts.items():
-                print(f"  • {journal[:50]}... ({count})")
-        
-        # Citations
-        if 'citation_count' in df.columns:
-            df['citations'] = pd.to_numeric(df['citation_count'], errors='coerce')
-            avg_citations = df['citations'].mean()
-            max_citations = df['citations'].max()
-            print(f"\n📈 Citations:")
-            print(f"  Moyenne: {avg_citations:.1f}")
-            print(f"  Maximum: {int(max_citations) if pd.notna(max_citations) else 0}")
+
 
 def main():
     """
     Fonction principale pour l'extraction massive
     """
-    print("🎓 PROJET SCOPUS CHATBOT - EXTRACTION MASSIVE")
+    print("🎓 PROJET ARXIV CHATBOT - EXTRACTION MASSIVE")
     print("=" * 50)
-    
-    # Clé API (remplacez par la vôtre)
-    API_KEY = "7f59af901d2d86f78a1fd60c1bf9426a"
-    
-    # Requêtes pour extraction massive
+
+    # Requêtes pour extraction massive (avec espaces possibles)
     queries = [
-        # IA et Machine Learning
-        "TITLE-ABS-KEY(artificial intelligence) AND PUBYEAR > 2020",
-        "TITLE-ABS-KEY(machine learning) AND PUBYEAR > 2020",
-        "TITLE-ABS-KEY(deep learning) AND PUBYEAR > 2020",
-        "TITLE-ABS-KEY(neural networks) AND PUBYEAR > 2020",
-        
-        # Domaines d'application
-        "TITLE-ABS-KEY(artificial intelligence AND medicine) AND PUBYEAR > 2020",
-        "TITLE-ABS-KEY(machine learning AND materials) AND PUBYEAR > 2020",
-        "TITLE-ABS-KEY(AI AND healthcare) AND PUBYEAR > 2020",
-        "TITLE-ABS-KEY(computer vision) AND PUBYEAR > 2020",
-        
-        # Technologies émergentes
-        "TITLE-ABS-KEY(transformer AND attention) AND PUBYEAR > 2021",
-        "TITLE-ABS-KEY(large language model) AND PUBYEAR > 2021",
-    ]
-    
+    'ti:"artificial intelligence" OR abs:"artificial intelligence"',
+    'ti:"machine learning" OR abs:"machine learning"',
+    'ti:"deep learning" OR abs:"deep learning"',
+    'ti:"neural networks" OR abs:"neural networks"',
+    'ti:"computer vision" OR abs:"computer vision"',
+    'ti:"natural language processing" OR abs:"NLP"',
+    'ti:"transformer" OR abs:"transformer"',
+    'ti:"large language model" OR abs:"LLM"',
+    'ti:"reinforcement learning" OR abs:"reinforcement learning"',
+    'ti:"speech recognition" OR abs:"speech recognition"',
+    ]   
+
+
     print(f"🎯 {len(queries)} requêtes préparées")
     print(f"📊 Objectif: ~{len(queries) * 50} articles")
-    
+
     # Extraction
-    extractor = MassiveScopusExtractor(API_KEY)
-    total_extracted = extractor.massive_extraction(queries, max_articles_per_query=50)
-    
+    extractor = MassiveArxivExtractor()
+    total_extracted = extractor.massive_extraction(queries, max_articles_per_query=200)
+
     if total_extracted > 0:
         json_file = extractor.save_articles()
-        
+
         print(f"\n🎉 EXTRACTION MASSIVE TERMINÉE!")
         print(f"📊 {total_extracted} articles extraits")
         print(f"📁 Fichier créé: {json_file}")
@@ -306,6 +200,7 @@ def main():
         print(f"   python src/data_processor.py")
     else:
         print(f"\n❌ Aucun article extrait")
+
 
 if __name__ == "__main__":
     main()
