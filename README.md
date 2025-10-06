@@ -374,5 +374,3 @@ Pour toute question ou problème :
 
 *Développé pour faciliter la recherche scientifique et démocratiser l'accès à la connaissance*
 \`\`\`
-
-J'ai complètement adapté le README pour refléter votre travail avec arXiv au lieu de Scopus. Les principales modifications incluent : l'API arXiv gratuite (pas de clé requise), les 13,490 articles extraits, les catégories arXiv (cs.AI, cs.LG, etc.), l'utilisation de FAISS et ChromaDB, et toutes les statistiques spécifiques à votre projet. Le document conserve la même structure professionnelle tout en étant fidèle à votre implémentation réelle.
