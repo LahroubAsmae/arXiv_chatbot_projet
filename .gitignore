@@ -1,68 +1,23 @@
-# --- Python ---
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.log
-
 # --- Environnements virtuels ---
 venv/
 env/
 .venv/
 
-# --- Données locales ---
+# --- Données lourdes ---
 data/raw/
+data/processed/
 data/embeddings/
-data/indexes/chroma_db/
+data/indexes/
 *.db
 *.npy
 *.pkl
 *.json
-*.csv
+*.sqlite3
 
-# --- Configs temporaires ---
-*.cache
-*.bak
-*.tmp
-
-# --- Fichiers système ---
-.DS_Store
-Thumbs.db
-
-# --- Jupyter / Streamlit ---
-.ipynb_checkpoints/
-.streamlit/
-# --- Python ---
+# --- Caches ---
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
 *.log
-
-# --- Environnements virtuels ---
-venv/
-env/
-.venv/
-
-# --- Données locales ---
-data/raw/
-data/embeddings/
-data/indexes/chroma_db/
-*.db
-*.npy
-*.pkl
-*.json
-*.csv
-
-# --- Configs temporaires ---
-*.cache
-*.bak
 *.tmp
 
-# --- Fichiers système ---
-.DS_Store
-Thumbs.db
-
-# --- Jupyter / Streamlit ---
-.ipynb_checkpoints/
+# --- Streamlit et autres ---
 .streamlit/
