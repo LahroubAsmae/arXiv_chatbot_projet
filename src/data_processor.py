@@ -1,6 +1,4 @@
-"""
-ÉTAPE 2 : Nettoyage et stockage des données ArXiv
-"""
+
 import pandas as pd
 import sqlite3
 import json
@@ -18,7 +16,7 @@ class ArxivDataProcessor:
         """
         Création de la structure de base de données adaptée à ArXiv
         """
-        print("🏗️ Création de la structure de base de données...")
+        print("Création de la structure de base de données...")
         
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(self.db_path)
@@ -37,7 +35,7 @@ class ArxivDataProcessor:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        print("  ✅ Table 'articles' créée")
+        print(" Table 'articles' créée")
         
         # Table auteurs
         conn.execute('''
@@ -47,7 +45,7 @@ class ArxivDataProcessor:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        print("  ✅ Table 'authors' créée")
+        print(" Table 'authors' créée")
         
         # Relations article–auteur
         conn.execute('''
@@ -60,7 +58,7 @@ class ArxivDataProcessor:
                 UNIQUE(article_id, author_id)
             )
         ''')
-        print("  ✅ Table 'article_authors' créée")
+        print(" Table 'article_authors' créée")
         
         # Index
         conn.execute('CREATE INDEX IF NOT EXISTS idx_articles_year ON articles(year)')
@@ -68,7 +66,7 @@ class ArxivDataProcessor:
         
         conn.commit()
         conn.close()
-        print("✅ Structure de base de données terminée\n")
+        print("Structure de base de données terminée\n")
     
     def clean_text(self, text):
         """
@@ -98,19 +96,19 @@ class ArxivDataProcessor:
         """
         Chargement et nettoyage des données ArXiv
         """
-        print(f"📂 Chargement des données depuis {json_file_path}")
+        print(f"Chargement des données depuis {json_file_path}")
         with open(json_file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         
         df = pd.DataFrame(data)
-        print(f"📊 {len(df)} articles chargés dans Pandas DataFrame")
+        print(f"{len(df)} articles chargés dans Pandas DataFrame")
         
-        print("🧹 Nettoyage des données avec Pandas...")
+        print("Nettoyage des données avec Pandas...")
         
         # Suppression des doublons
         initial_count = len(df)
         df = df.drop_duplicates(subset=['arxiv_id'], keep='first')
-        print(f"  🗑️ {initial_count - len(df)} doublons supprimés")
+        print(f"  {initial_count - len(df)} doublons supprimés")
         
         # Nettoyage des champs
         df['title'] = df['title'].apply(self.clean_text)
@@ -124,14 +122,14 @@ class ArxivDataProcessor:
         # Extraction de l’année
         df['year'] = df['published'].apply(self.extract_year)
         
-        print(f"✅ Nettoyage terminé : {len(df)} articles propres\n")
+        print(f" Nettoyage terminé : {len(df)} articles propres\n")
         return df
     
     def store_articles(self, df):
         """
         Stockage des articles
         """
-        print("💾 Stockage des articles en base de données...")
+        print(" Stockage des articles en base de données...")
         conn = sqlite3.connect(self.db_path)
         articles_stored = 0
         
@@ -152,10 +150,10 @@ class ArxivDataProcessor:
                 ))
                 articles_stored += 1
             conn.commit()
-            print(f"  ✅ {articles_stored} articles stockés")
+            print(f"  {articles_stored} articles stockés")
         except Exception as e:
             conn.rollback()
-            print(f"❌ Erreur stockage articles: {e}")
+            print(f" Erreur stockage articles: {e}")
         finally:
             conn.close()
         return articles_stored
@@ -164,7 +162,7 @@ class ArxivDataProcessor:
         """
         Stockage des auteurs et relations
         """
-        print("👥 Stockage des auteurs et relations...")
+        print(" Stockage des auteurs et relations...")
         conn = sqlite3.connect(self.db_path)
         relations_created = 0
         
@@ -202,11 +200,11 @@ class ArxivDataProcessor:
             conn.commit()
             
             total_authors = conn.execute('SELECT COUNT(*) FROM authors').fetchone()[0]
-            print(f"  ✅ {total_authors} auteurs uniques stockés")
-            print(f"  ✅ {relations_created} relations créées")
+            print(f"   {total_authors} auteurs uniques stockés")
+            print(f"  {relations_created} relations créées")
         except Exception as e:
             conn.rollback()
-            print(f"❌ Erreur stockage auteurs: {e}")
+            print(f" Erreur stockage auteurs: {e}")
         finally:
             conn.close()
     
@@ -214,7 +212,7 @@ class ArxivDataProcessor:
         """
         Génération des stats
         """
-        print("📊 Génération des statistiques...")
+        print("Génération des statistiques...")
         conn = sqlite3.connect(self.db_path)
         
         total_articles = conn.execute('SELECT COUNT(*) FROM articles').fetchone()[0]
@@ -226,16 +224,16 @@ class ArxivDataProcessor:
         
         conn.close()
         
-        print(f"  📚 Articles: {total_articles}")
-        print(f"  👥 Auteurs: {total_authors}")
-        print(f"  🔗 Relations: {total_relations}")
-        print("  📅 Articles par année:", by_year[:5])
-        print("📖 Échantillon:")
+        print(f"   Articles: {total_articles}")
+        print(f"  Auteurs: {total_authors}")
+        print(f"   Relations: {total_relations}")
+        print("   Articles par année:", by_year[:5])
+        print(" Échantillon:")
         for t, y in sample_articles:
             print(f"   - {y}: {t[:60]}...")
     
     def process_complete_pipeline(self, json_file_path):
-        print("🚀 PIPELINE COMPLET DE NETTOYAGE & STOCKAGE (ArXiv)")
+        print("PIPELINE COMPLET DE NETTOYAGE & STOCKAGE (ArXiv)")
         print("=" * 60)
         df = self.load_and_clean_data(json_file_path)
         self.store_articles(df)
@@ -243,18 +241,18 @@ class ArxivDataProcessor:
         self.generate_statistics()
 
 def main():
-    print("🎓 PROJET ARXIV CHATBOT - ÉTAPE 2 (Nettoyage & stockage)")
+    print(" PROJET ARXIV CHATBOT - ÉTAPE 2 (Nettoyage & stockage)")
     print("=" * 50)
     
     import glob
     json_files = glob.glob('data/raw/*.json')
     if not json_files:
-        print("❌ Aucun fichier JSON trouvé")
+        print("Aucun fichier JSON trouvé")
         return
     
     json_file = json_files[-1]  # Prend le plus récent
-    print(f"🎯 Fichier sélectionné: {json_file}")
-    
+    print(f"Fichier sélectionné: {json_file}")
+
     processor = ArxivDataProcessor()
     processor.process_complete_pipeline(json_file)
 

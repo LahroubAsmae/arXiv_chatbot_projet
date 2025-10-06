@@ -1,7 +1,3 @@
-"""
-ÉTAPE 3 : Indexation sémantique des résumés (ArXiv)
-Utilise Sentence Transformers + FAISS + ChromaDB
-"""
 
 import sqlite3
 import numpy as np
@@ -23,34 +19,34 @@ class SemanticIndexer:
         self.article_ids = []
         self.chroma_client = None
 
-        print("🔧 Initialisation de l'indexeur sémantique (ArXiv)")
+        print(" Initialisation de l'indexeur sémantique (ArXiv)")
         self.setup_directories()
 
     def setup_directories(self):
         """Création des dossiers nécessaires"""
         Path('data/indexes').mkdir(parents=True, exist_ok=True)
         Path('data/embeddings').mkdir(parents=True, exist_ok=True)
-        print("📁 Dossiers d'indexation créés")
+        print(" Dossiers d'indexation créés")
 
     def load_sentence_transformer(self):
         """
         ÉTAPE 3.1 : Chargement du modèle Sentence Transformer
         """
-        print(f"🤖 Chargement du modèle: {self.model_name}")
+        print(f"Chargement du modèle: {self.model_name}")
         self.model = SentenceTransformer(self.model_name)
-        print("✅ Modèle chargé")
+        print(" Modèle chargé")
 
         # Test rapide
         test_text = "artificial intelligence in medicine"
         test_embedding = self.model.encode([test_text])
-        print(f"🧪 Test réussi - Dimension vecteur: {test_embedding.shape[1]}")
+        print(f"Test réussi - Dimension vecteur: {test_embedding.shape[1]}")
         return test_embedding.shape[1]
 
     def load_articles_from_database(self):
         """
         ÉTAPE 3.2 : Charger les articles depuis la base ArXiv
         """
-        print("📚 Chargement des articles depuis la base ArXiv...")
+        print(" Chargement des articles depuis la base ArXiv...")
         conn = sqlite3.connect(self.db_path)
 
         query = '''
@@ -68,9 +64,9 @@ class SemanticIndexer:
         df = pd.read_sql_query(query, conn)
         conn.close()
 
-        print(f"📊 {len(df)} articles trouvés")
-        print(f"   📝 Avec résumé: {(df['abstract'].notna() & (df['abstract'] != '')).sum()}")
-        print(f"   🏷️ Avec catégories: {(df['categories'].notna() & (df['categories'] != '')).sum()}")
+        print(f" {len(df)} articles trouvés")
+        print(f"   Avec résumé: {(df['abstract'].notna() & (df['abstract'] != '')).sum()}")
+        print(f"   Avec catégories: {(df['categories'].notna() & (df['categories'] != '')).sum()}")
         return df
 
     def prepare_text_for_embedding(self, row):
@@ -90,7 +86,7 @@ class SemanticIndexer:
         """
         ÉTAPE 3.4 : Générer les embeddings avec Sentence Transformers
         """
-        print("🔄 Génération des embeddings...")
+        print(" Génération des embeddings...")
         texts = [self.prepare_text_for_embedding(row) for _, row in df.iterrows()]
 
         embeddings = self.model.encode(
@@ -99,18 +95,18 @@ class SemanticIndexer:
             show_progress_bar=True,
             convert_to_numpy=True
         )
-        print(f"✅ Embeddings créés - Shape: {embeddings.shape}")
+        print(f" Embeddings créés - Shape: {embeddings.shape}")
 
         embeddings_path = 'data/embeddings/article_embeddings_arxiv.npy'
         np.save(embeddings_path, embeddings)
-        print(f"💾 Sauvegardés: {embeddings_path}")
+        print(f"Sauvegardés: {embeddings_path}")
         return embeddings
 
     def create_faiss_index(self, embeddings, df):
         """
         ÉTAPE 3.5 : Création de l’index FAISS
         """
-        print("🏗️ Création de l’index FAISS...")
+        print("Création de l’index FAISS...")
         embeddings = embeddings.astype('float32')
         faiss.normalize_L2(embeddings)
 
@@ -119,7 +115,7 @@ class SemanticIndexer:
         self.faiss_index.add(embeddings)
 
         self.article_ids = df['id'].tolist()
-        print(f"✅ Index FAISS créé ({self.faiss_index.ntotal} vecteurs)")
+        print(f"Index FAISS créé ({self.faiss_index.ntotal} vecteurs)")
 
         faiss_path = 'data/indexes/arxiv_faiss.index'
         faiss.write_index(self.faiss_index, faiss_path)
@@ -132,13 +128,13 @@ class SemanticIndexer:
         with open('data/indexes/arxiv_faiss_metadata.pkl', 'wb') as f:
             pickle.dump(metadata, f)
 
-        print(f"💾 FAISS sauvegardé: {faiss_path}")
+        print(f"FAISS sauvegardé: {faiss_path}")
 
     def create_chromadb_collection(self, df):
         """
-        ÉTAPE 3.6 : Création d’une collection ChromaDB
+        ÉTAPE 3.6 : Création d’une collection ChromaDB (avec batching)
         """
-        print("🔄 Création ChromaDB...")
+        print("Création ChromaDB...")
         self.chroma_client = chromadb.PersistentClient(path="data/indexes/chroma_db")
 
         try:
@@ -165,25 +161,36 @@ class SemanticIndexer:
             metadatas.append(metadata)
             ids.append(str(row['id']))
 
-        collection.add(documents=documents, metadatas=metadatas, ids=ids)
-        print(f"✅ Collection ChromaDB créée ({len(documents)} documents)")
+        # Ajout par batches (max ~5000 pour être safe)
+        batch_size = 5000
+        for i in range(0, len(documents), batch_size):
+            end = i + batch_size
+            collection.add(
+                documents=documents[i:end],
+                metadatas=metadatas[i:end],
+                ids=ids[i:end]
+            )
+            print(f"   Batch {i//batch_size+1} ajouté ({end if end < len(documents) else len(documents)}/{len(documents)})")
+
+        print(f"Collection ChromaDB créée ({len(documents)} documents)")
+
 
     def test_semantic_search(self, df):
         """
         ÉTAPE 3.7 : Test de recherche sémantique
         """
-        print("🧪 Test recherche sémantique...")
+        print(" Test recherche sémantique...")
         queries = ["artificial intelligence", "deep learning in physics", "medical imaging"]
 
         for query in queries:
-            print(f"\n🔍 Query: {query}")
+            print(f"\n Query: {query}")
 
             # Test FAISS
             if self.faiss_index:
                 q_emb = self.model.encode([query]).astype('float32')
                 faiss.normalize_L2(q_emb)
                 scores, indices = self.faiss_index.search(q_emb, k=3)
-                print("  📊 FAISS top 3:")
+                print("   FAISS top 3:")
                 for i, (score, idx) in enumerate(zip(scores[0], indices[0])):
                     if idx < len(self.article_ids):
                         art_id = self.article_ids[idx]
@@ -195,11 +202,11 @@ class SemanticIndexer:
                 try:
                     col = self.chroma_client.get_collection("arxiv_articles")
                     results = col.query(query_texts=[query], n_results=3)
-                    print("  📊 ChromaDB top 3:")
+                    print("   ChromaDB top 3:")
                     for i, md in enumerate(results['metadatas'][0]):
                         print(f"    {i+1}. {md['title'][:60]}...")
                 except Exception as e:
-                    print(f"⚠️ Erreur ChromaDB: {e}")
+                    print(f" Erreur ChromaDB: {e}")
 
     def save_indexing_report(self, df, embeddings):
         """
@@ -216,21 +223,21 @@ class SemanticIndexer:
         }
         with open('data/indexes/indexing_report.json', 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
-        print("✅ Rapport d’indexation sauvegardé")
+        print(" Rapport d’indexation sauvegardé")
         return report
 
     def process_complete_indexing(self):
         """
         Pipeline complet d’indexation ArXiv
         """
-        print("🚀 DÉBUT INDEXATION ARXIV")
+        print(" DÉBUT INDEXATION ARXIV")
         print("="*50)
 
         try:
             dim = self.load_sentence_transformer()
             df = self.load_articles_from_database()
             if len(df) == 0:
-                print("❌ Aucun article trouvé")
+                print(" Aucun article trouvé")
                 return False
 
             embeddings = self.create_embeddings(df)
@@ -239,36 +246,36 @@ class SemanticIndexer:
             self.test_semantic_search(df)
             report = self.save_indexing_report(df, embeddings)
 
-            print("\n🎉 INDEXATION TERMINÉE")
-            print(f"📊 Articles: {report['total_articles']}")
-            print(f"🧠 Modèle: {report['model_used']}")
-            print(f"📐 Dimension: {report['embedding_dimension']}")
-            print(f"🔍 FAISS vecteurs: {report['faiss_index_size']}")
+            print("\n INDEXATION TERMINÉE")
+            print(f"Articles: {report['total_articles']}")
+            print(f" Modèle: {report['model_used']}")
+            print(f" Dimension: {report['embedding_dimension']}")
+            print(f" FAISS vecteurs: {report['faiss_index_size']}")
             return True
 
         except Exception as e:
-            print(f"\n❌ Erreur: {e}")
+            print(f"\n Erreur: {e}")
             import traceback; traceback.print_exc()
             return False
 
 
 def main():
-    print("🎓 PROJET ARXIV CHATBOT - ÉTAPE 3")
+    print("PROJET ARXIV CHATBOT - ÉTAPE 3")
     print("Indexation sémantique avec Sentence Transformers")
     print("="*50)
 
     db_path = 'data/processed/arxiv_database.db'
     if not Path(db_path).exists():
-        print(f"❌ Base non trouvée: {db_path}")
+        print(f" Base non trouvée: {db_path}")
         return
 
     indexer = SemanticIndexer(db_path)
     success = indexer.process_complete_indexing()
 
     if success:
-        print("\n✅ Étape 3 réussie ! Prêt pour l’interface utilisateur")
+        print("\n Étape 3 réussie ! Prêt pour l’interface utilisateur")
     else:
-        print("\n❌ Échec de l’étape 3")
+        print("\nÉchec de l’étape 3")
 
 
 if __name__ == "__main__":

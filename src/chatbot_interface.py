@@ -100,7 +100,7 @@ class ArxivChatbot:
             self.articles_df = self.load_articles_data()
 
         if self.faiss_index is None:
-            st.error("⚠️ Index FAISS manquant. Exécutez l’étape 3 (indexation sémantique).")
+            st.error("Index FAISS manquant. Exécutez l’étape 3 (indexation sémantique).")
             st.stop()
 
     # ================================
@@ -141,19 +141,19 @@ class ArxivChatbot:
             st.subheader(article['title'])
 
             if article.get('pdf_url'):
-                st.markdown(f"[📄 PDF disponible]({article['pdf_url']})")
+                st.markdown(f"[ PDF disponible]({article['pdf_url']})")
 
             if article.get('year'):
-                st.write(f"📅 Année : {article['year']}")
+                st.write(f"Année : {article['year']}")
 
             if article.get('categories'):
-                st.write(f"🏷️ Catégories : {article['categories']}")
+                st.write(f"Catégories : {article['categories']}")
 
             if article.get('authors'):
-                st.write(f"✍️ Auteurs : {', '.join(article['authors'])}")
+                st.write(f"Auteurs : {', '.join(article['authors'])}")
 
             if score is not None:
-                st.write(f"🔎 Score de pertinence : {score:.3f}")
+                st.write(f"Score de pertinence : {score:.3f}")
 
             if article.get('abstract'):
                 with st.expander("Résumé"):
@@ -166,7 +166,7 @@ class ArxivChatbot:
         if self.articles_df.empty:
             return
 
-        st.subheader("📊 Visualisations interactives")
+        st.subheader("Visualisations interactives")
 
         col1, col2 = st.columns(2)
 
@@ -207,21 +207,21 @@ class ArxivChatbot:
     # INTERFACE PRINCIPALE
     # ================================
     def run_interface(self):
-        st.title("📚 ArXiv Research Assistant")
+        st.title("ArXiv Research Assistant")
         st.caption("Chatbot scientifique basé sur indexation sémantique")
 
         # Zone de saisie
         query = st.text_input(
-            "❓ Posez une question :",
+            "Posez une question :",
             placeholder="Ex: Articles récents sur le deep learning en médecine..."
         )
 
         col1, col2 = st.columns([1, 4])
         with col1:
-            search_button = st.button("🔍 Rechercher")
+            search_button = st.button("Rechercher")
 
         # Filtres
-        st.sidebar.header("🔎 Filtres")
+        st.sidebar.header("Filtres")
         year_filter = st.sidebar.multiselect(
             "Filtrer par année",
             options=sorted(self.articles_df['year'].dropna().unique(), reverse=True)
@@ -235,27 +235,33 @@ class ArxivChatbot:
             options=sorted(set(self.articles_df['categories'].dropna().unique()))
         )
 
-        if search_button and query:
+        if search_button:
             with st.spinner("Recherche en cours..."):
-                results = self.semantic_search(query, k=10)
+                if query.strip():
+                    results = self.semantic_search(query, k=10)
+                else:
+                    # Pas de query => on prend tout le corpus
+                    results = [{'score': None, 'article': row.to_dict()} for _, row in self.articles_df.iterrows()]
 
+                # Application des filtres
                 if year_filter:
                     results = [r for r in results if r['article']['year'] in year_filter]
                 if author_filter:
                     results = [r for r in results if r['article'].get('authors') and
-                               any(a in r['article']['authors'] for a in author_filter)]
+                            any(a in r['article']['authors'] for a in author_filter)]
                 if cat_filter:
                     results = [r for r in results if r['article']['categories'] in cat_filter]
 
+
                 if results:
-                    st.subheader("📑 Résultats trouvés")
+                    st.subheader("Résultats trouvés")
                     for res in results:
                         self.display_article_card(res['article'], res['score'])
                 else:
                     st.warning("Aucun résultat avec ces critères.")
 
         # Tabs
-        tab1, tab2 = st.tabs(["📊 Analyse du corpus", "📂 Base documentaire"])
+        tab1, tab2 = st.tabs(["Analyse du corpus", "Base documentaire"])
         with tab1:
             self.create_visualizations()
         with tab2:
