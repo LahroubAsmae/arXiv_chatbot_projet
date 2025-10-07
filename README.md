@@ -169,7 +169,7 @@ L'interface principale présente :
 - Recherche sémantique en langage naturel
 - Suggestions de requêtes types
 - Affichage des statistiques du corpus
-
+![Description of image](./assets/screen1.png)
 ### 2. Barre Latérale - Filtres Avancés
 
 La sidebar offre des options de filtrage sophistiquées :
