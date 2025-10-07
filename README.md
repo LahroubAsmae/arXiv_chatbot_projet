@@ -1,4 +1,4 @@
-# 🤖 Chatbot arXiv - Recherche Sémantique d'Articles Scientifiques
+# Chatbot arXiv - Recherche Sémantique d'Articles Scientifiques
 
 [![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32-red.svg)](https://streamlit.io/)
@@ -6,7 +6,7 @@
 
 > Système intelligent de recherche sémantique d'articles scientifiques utilisant l'IA et le traitement du langage naturel
 
-## 📋 Table des Matières
+## Table des Matières
 
 - [Vue d'Ensemble](#vue-densemble)
 - [Fonctionnalités](#fonctionnalités)
@@ -23,7 +23,7 @@
 
 ---
 
-## 🎯 Vue d'Ensemble
+## Vue d'Ensemble
 
 Ce projet implémente un **chatbot intelligent** pour la recherche d'articles scientifiques sur **arXiv** en utilisant des techniques avancées de **recherche sémantique**. Contrairement aux moteurs de recherche traditionnels basés sur des mots-clés, notre système comprend le **sens profond** des requêtes grâce aux embeddings sémantiques et aux transformers.
 
@@ -44,15 +44,15 @@ Notre système utilise l'IA pour :
 
 ---
 
-## ✨ Fonctionnalités
+##  Fonctionnalités
 
-### 🔍 Recherche Sémantique Avancée
+### Recherche Sémantique Avancée
 - Recherche en langage naturel (pas seulement des mots-clés)
 - Compréhension du contexte et des synonymes
 - Scores de pertinence pour chaque résultat
 - Temps de réponse < 1 seconde
 
-### 🎨 Interface Utilisateur Intuitive
+### Interface Utilisateur Intuitive
 - Interface web moderne avec Streamlit
 - Affichage des résultats avec cartes expansibles
 - Visualisations interactives (timeline, catégories)
@@ -64,7 +64,7 @@ Notre système utilise l'IA pour :
 - Tri par pertinence, année ou citations
 - Export des résultats
 
-### 📊 Statistiques et Visualisations
+###  Statistiques et Visualisations
 - Distribution temporelle des publications
 - Répartition par catégories
 - Graphiques interactifs Plotly
@@ -72,7 +72,7 @@ Notre système utilise l'IA pour :
 
 ---
 
-## 🏗️ Architecture du Projet
+##  Architecture du Projet
 
 ### Structure des Dossiers
 
@@ -115,13 +115,13 @@ arxiv_chatbot/
 
 ### Description des Modules
 
-#### 📥 Module 1 : Extraction (arxiv_extractor_massive.py)
+####  Module 1 : Extraction (arxiv_extractor_massive.py)
 - Extraction massive depuis l'API arXiv
 - Gestion du rate limiting et des erreurs réseau
 - Sauvegarde en JSON et CSV
 - **Résultat** : 13,641 articles extraits
 
-#### 🧹 Module 2 : Nettoyage (data_processor.py)
+####  Module 2 : Nettoyage (data_processor.py)
 - Déduplication des articles
 - Normalisation textuelle
 - Validation des métadonnées
@@ -134,7 +134,7 @@ arxiv_chatbot/
 - Collection ChromaDB pour métadonnées
 - **Résultat** : 13,490 vecteurs 384D indexés
 
-#### 🖥️ Module 4 : Interface (chatbot_interface.py)
+#### Module 4 : Interface (chatbot_interface.py)
 - Application web Streamlit
 - Recherche sémantique en temps réel
 - Visualisations interactives
@@ -142,7 +142,7 @@ arxiv_chatbot/
 
 ---
 
-## 🛠️ Technologies Utilisées
+##  Technologies Utilisées
 
 ### Langages et Frameworks
 - **Python 3.13** - Langage principal
@@ -168,7 +168,7 @@ arxiv_chatbot/
 
 ---
 
-## 📦 Installation
+##  Installation
 
 ### Prérequis
 
@@ -208,7 +208,7 @@ python validate_step2.py
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
 ### Variables d'Environnement
 
@@ -261,7 +261,7 @@ ARXIV_CONFIG = {
 
 ---
 
-## 🚀 Utilisation
+##  Utilisation
 
 ### Extraction des Données
 
@@ -304,11 +304,11 @@ L'application sera accessible à : **http://localhost:8501**
 
 ---
 
-## 📸 Captures d'Écran
+## Captures d'Écran
 
 ### Interface Principale
 
-![Interface Principale](screenshots/interface_principale.png)
+![App Screenshot](./assets/screen1.png)
 
 L'interface principale présente :
 - **Barre de recherche** : Saisie de requêtes en langage naturel
@@ -317,8 +317,7 @@ L'interface principale présente :
 - **Zone de résultats** : Affichage des articles pertinents
 
 ### Résultats de Recherche
-
-![Résultats de Recherche](screenshots/resultats_recherche.png)
+![App Screenshot](./assets/screen2.png)
 
 Chaque résultat affiche :
 - **Titre** de l'article (cliquable)
@@ -330,7 +329,7 @@ Chaque résultat affiche :
 
 ### Visualisations Interactives
 
-![Visualisations](screenshots/visualisations.png)
+![App Screenshot](./assets/screen3.png)
 
 Les visualisations incluent :
 - **Timeline des publications** : Évolution temporelle
@@ -338,8 +337,6 @@ Les visualisations incluent :
 - **Graphiques interactifs** : Zoom, filtrage, export
 
 ### Filtres Avancés
-
-![Filtres Avancés](screenshots/filtres_avances.png)
 
 Options de filtrage :
 - **Slider temporel** : Sélection de la période
