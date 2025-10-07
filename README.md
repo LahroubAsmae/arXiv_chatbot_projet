@@ -180,13 +180,13 @@ arxiv_chatbot/
 ### Étapes d'Installation
 
 1. **Cloner le repository**
-\`\`\`bash
+```bash
 git clone https://github.com/votre-username/arxiv-chatbot.git
 cd arxiv-chatbot
-\`\`\`
+```
 
 2. **Créer un environnement virtuel**
-\`\`\`bash
+```bash
 python -m venv venv
 
 # Windows
@@ -194,18 +194,17 @@ venv\Scripts\activate
 
 # Linux/Mac
 source venv/bin/activate
-\`\`\`
+```
 
 3. **Installer les dépendances**
-\`\`\`bash
+```bash
 pip install -r requirements.txt
-\`\`\`
+```
 
 4. **Vérifier l'installation**
-\`\`\`bash
+```bash
 python validate_step2.py
-\`\`\`
-
+```
 ---
 
 ##  Configuration
@@ -214,7 +213,7 @@ python validate_step2.py
 
 Créez un fichier `.env` à la racine du projet :
 
-\`\`\`env
+```env
 # Configuration API arXiv
 ARXIV_BASE_URL=http://export.arxiv.org/api/query
 ARXIV_MAX_RESULTS=2000
@@ -238,13 +237,13 @@ CHROMA_COLLECTION=arxiv_articles
 # Configuration Streamlit
 STREAMLIT_PORT=8501
 STREAMLIT_THEME=light
-\`\`\`
+```
 
 ### Configuration API arXiv
 
 Le fichier `config/api_config.py` contient les paramètres de l'API :
 
-\`\`\`python
+```python
 ARXIV_CONFIG = {
     'base_url': 'http://export.arxiv.org/api/query',
     'max_results': 2000,
@@ -257,17 +256,16 @@ ARXIV_CONFIG = {
         'end': '2025-12-31'
     }
 }
-\`\`\`
-
+```
 ---
 
 ##  Utilisation
 
 ### Extraction des Données
 
-\`\`\`bash
+```bash
 python src/arxiv_extractor_massive.py
-\`\`\`
+```
 
 **Sortie** :
 - `data/raw/arxiv_extraction.json` (13,641 articles)
@@ -275,9 +273,9 @@ python src/arxiv_extractor_massive.py
 
 ### Nettoyage et Structuration
 
-\`\`\`bash
+```bash
 python src/data_processor.py
-\`\`\`
+```
 
 **Sortie** :
 - `data/processed/arxiv_database.db` (13,490 articles uniques)
@@ -285,9 +283,9 @@ python src/data_processor.py
 
 ### Indexation Sémantique
 
-\`\`\`bash
+```bash
 python src/semantic_indexer.py
-\`\`\`
+```
 
 **Sortie** :
 - `data/embeddings/article_embeddings_arxiv.npy` (13,490 vecteurs)
@@ -296,9 +294,9 @@ python src/semantic_indexer.py
 
 ### Lancement de l'Interface
 
-\`\`\`bash
+```bash
 streamlit run src/chatbot_interface.py
-\`\`\`
+```
 
 L'application sera accessible à : **http://localhost:8501**
 
@@ -346,7 +344,7 @@ Options de filtrage :
 
 ---
 
-## 📊 Structure des Données
+##  Structure des Données
 
 ### Base de Données SQLite
 
@@ -385,7 +383,7 @@ Options de filtrage :
 
 ---
 
-## ⚡ Performance
+##  Performance
 
 ### Métriques Système
 
@@ -417,7 +415,7 @@ Options de filtrage :
 
 ---
 
-## 🤝 Contribuer
+##  Contribuer
 
 Les contributions sont les bienvenues ! Voici comment participer :
 
@@ -436,13 +434,13 @@ Les contributions sont les bienvenues ! Voici comment participer :
 
 ---
 
-## 📄 Licence
+## Licence
 
 Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ---
 
-## 👥 Auteurs
+##  Auteurs
 
 **Équipe de Développement**
 - Asmae LAHROUB
@@ -459,17 +457,17 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 
 ---
 
-## 📞 Contact
+##  Contact
 
 Pour toute question ou suggestion :
 
-- 📧 Email : [votre-email@example.com](mailto:votre-email@example.com)
-- 🐛 Issues : [GitHub Issues](https://github.com/votre-username/arxiv-chatbot/issues)
-- 💬 Discussions : [GitHub Discussions](https://github.com/votre-username/arxiv-chatbot/discussions)
+- Email : [votre-email@example.com](mailto:lhroubasmae2018@example.com)
+- Issues : [GitHub Issues](https://github.com/votre-username/arxiv-chatbot/issues)
+- Discussions : [GitHub Discussions](https://github.com/votre-username/arxiv-chatbot/discussions)
 
 ---
 
-## 🙏 Remerciements
+##  Remerciements
 
 - **arXiv** pour l'accès gratuit à leur API
 - **Hugging Face** pour les modèles Sentence Transformers
@@ -479,7 +477,7 @@ Pour toute question ou suggestion :
 
 ---
 
-## 🔮 Perspectives Futures
+##  Perspectives Futures
 
 ### Court Terme (3-6 mois)
 - [ ] Extension à 50,000+ articles
@@ -501,7 +499,7 @@ Pour toute question ou suggestion :
 
 ---
 
-## 📚 Ressources Additionnelles
+##  Ressources Additionnelles
 
 ### Documentation
 - [arXiv API Documentation](https://arxiv.org/help/api)
@@ -523,9 +521,8 @@ Pour toute question ou suggestion :
 
 **⭐ Si ce projet vous a été utile, n'hésitez pas à lui donner une étoile ! ⭐**
 
-Made with ❤️ by the arXiv Chatbot Team
+
 
 </div>
-\`\`\`
+```
 
-J'ai complètement restructuré le README avec une architecture de projet claire et bien formatée. La structure des dossiers est maintenant affichée verticalement avec une hiérarchie lisible, et j'ai ajouté une section complète pour les captures d'écran de l'interface. Le document est maintenant bien organisé avec des sections claires, des tableaux pour les données structurées, et des badges pour un aspect professionnel.
