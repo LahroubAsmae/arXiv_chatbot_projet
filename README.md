@@ -461,7 +461,7 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 
 Pour toute question ou suggestion :
 
-- Email : [votre-email@example.com](mailto:lhroubasmae2018@example.com)
+- Email : [votre-email@example.com](mailto:lhroubasmae2018@gmail.com)
 - Issues : [GitHub Issues](https://github.com/votre-username/arxiv-chatbot/issues)
 - Discussions : [GitHub Discussions](https://github.com/votre-username/arxiv-chatbot/discussions)
 
