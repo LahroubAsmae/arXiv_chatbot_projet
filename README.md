@@ -169,7 +169,9 @@ L'interface principale présente :
 - Recherche sémantique en langage naturel
 - Suggestions de requêtes types
 - Affichage des statistiques du corpus
+- 
 ![Description of image](./assets/screen1.png)
+
 ### 2. Barre Latérale - Filtres Avancés
 
 La sidebar offre des options de filtrage sophistiquées :
@@ -183,6 +185,9 @@ La sidebar offre des options de filtrage sophistiquées :
 - Nombre d'articles dans le corpus filtré
 - Distribution par année
 - Top catégories représentées
+
+  ![Description of image](./assets/screen2.png)
+
 
 ### 3. Affichage des Résultats
 
@@ -200,6 +205,8 @@ Les résultats sont présentés sous forme de cartes expansibles :
 - Bouton "Voir PDF" : Lien direct vers l'article sur arXiv
 - Bouton "Copier BibTeX" : Export de la citation
 - Affichage des catégories complètes
+
+![Description of image](./assets/screen1.png)
 
 ### 4. Visualisations Interactives
 
@@ -257,6 +264,8 @@ Une section dédiée affiche les métriques globales :
 - Distribution géographique des auteurs (si disponible)
 - Top 10 des auteurs les plus prolifiques
 - Nuage de mots des termes fréquents
+
+![Description of image](./assets/screen3.png)
 
 ### 7. Mode Sombre / Clair
 
