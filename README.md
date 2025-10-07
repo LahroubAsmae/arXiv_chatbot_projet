@@ -58,8 +58,8 @@ Notre système utilise l'IA pour :
 - Visualisations interactives (timeline, catégories)
 - Design responsive (desktop/tablette)
 
-### 🔧 Filtres et Options
-- Filtrage par année (2020-2025)
+### Filtres et Options
+- Filtrage par année 
 - Sélection de catégories arXiv
 - Tri par pertinence, année ou citations
 - Export des résultats
@@ -128,7 +128,7 @@ arxiv_chatbot/
 - Stockage dans SQLite optimisée
 - **Résultat** : 13,490 articles uniques
 
-#### 🧠 Module 3 : Indexation (semantic_indexer.py)
+#### Module 3 : Indexation (semantic_indexer.py)
 - Génération d'embeddings avec Sentence Transformers
 - Création d'index FAISS pour recherche rapide
 - Collection ChromaDB pour métadonnées
