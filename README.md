@@ -76,7 +76,7 @@ Notre système utilise l'IA pour :
 
 ### Structure des Dossiers
 
-\`\`\`
+```bash
 arxiv_chatbot/
 │
 ├── config/
@@ -111,7 +111,7 @@ arxiv_chatbot/
 ├── README.md                      # Documentation
 ├── requirements.txt               # Dépendances Python
 └── validate_step2.py              # Validation des étapes
-\`\`\`
+```
 
 ### Description des Modules
 
